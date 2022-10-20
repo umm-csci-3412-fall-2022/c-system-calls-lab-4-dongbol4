@@ -1,44 +1,59 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define BUF_SIZE 1024
 
-bool is_vowel(char c) {
-    /*
-     * Returns true if c is a vowel (upper or lower case), and
-     * false otherwise.
-     */
-}
-
-int copy_non_vowels(int num_chars, char* in_buf, char* out_buf) {
-    /*
-     * Copy all the non-vowels from in_buf to out_buf.
-     * num_chars indicates how many characters are in in_buf,
-     * and this function should return the number of non-vowels that
-     * that were copied over.
-     */
-}
-
 void disemvowel(FILE* inputFile, FILE* outputFile) {
-    /*
-     * Copy all the non-vowels from inputFile to outputFile.
-     * Create input and output buffers, and use fread() to repeatedly read
-     * in a buffer of data, copy the non-vowels to the output buffer, and
-     * use fwrite to write that out.
-     */
+    char* str = calloc(BUF_SIZE + 1,sizeof(char));
+    char* result;
+    int i = 0;
+    int j = 0;
+    while(fgets(str,BUF_SIZE,inputFile) != 0 ){
+        i = 0;
+        j = 0;
+        result = (char*) calloc(strlen(str)+1, sizeof(char));
+        for(i=0;str[i];i++){
+            char temp[1]={str[i]};
+            if(strpbrk(temp,"aeiouAEIOU")){
+            }else{
+                result[j++] = str[i];
+            }
+        }
+        result[j] = '\0';
+        fwrite(result,1,strlen(result),outputFile);
+        free(result);
+    }
+    free(str);
 }
 
 int main(int argc, char *argv[]) {
-    // This sets these to `stdin` and `stdout` by default.
-    // You then need to set them to user specified files when the user
-    // provides files names as command line arguments.
     FILE *inputFile = stdin;
     FILE *outputFile = stdout;
-
-    // Code that processes the command line arguments
-    // and sets up inputFile and outputFile.
+    
+    if(argc == 2) {
+        inputFile = fopen(argv[1], "r");
+    } else if (argc == 3) {
+        inputFile = fopen(argv[1], "r");
+        outputFile = fopen(argv[2], "w");
+    } else if (argc > 3) { 
+        fprintf(stderr, "File Error, please try again. : )");
+        exit(1);
+    }
+    if (inputFile == NULL || outputFile == NULL) {
+        fprintf(stderr, "File Error, please try again. : )");
+        exit(1);
+    }
 
     disemvowel(inputFile, outputFile);
+    
+    if(inputFile != stdin) {
+        fclose(inputFile);
+    }
+    if(outputFile != stdout) {
+        fclose(outputFile);
+    }
 
     return 0;
 }
